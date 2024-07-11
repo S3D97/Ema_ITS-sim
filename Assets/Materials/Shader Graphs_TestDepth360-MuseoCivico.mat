@@ -47,10 +47,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _Blend: 0
-    - _DEPTH_Power: 0.28
+    - _DEPTH_Power: 0.2
     - _Expansion: 0
     - _LOD_360: 0
-    - _LOD_DEPTH: 11.48
+    - _LOD_DEPTH: 8.4
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
