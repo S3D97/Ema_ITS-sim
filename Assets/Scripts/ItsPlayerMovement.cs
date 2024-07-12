@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class ItsPlayerCameraMovement : MonoBehaviour
 {
 
-    public Mouse mouseLook;
+    //public Mouse mouseLook;
     //public KeyCode sblocca;
     //public KeyCode blocca;
 
@@ -40,20 +41,20 @@ public class ItsPlayerCameraMovement : MonoBehaviour
         itsorientation.rotation = Quaternion.Euler(0, yRotation, 0);
 
 
-        if(Input.GetButtonDown("Sblocca mouse"))
-       {
-            Debug.Log("mouse Sbloccato");
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            //mouseLook.enabled = false;
-       }
-       else if (Input.GetKeyUp(KeyCode.E))
-       {
-            Debug.Log("mouse Bloccato");
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+       // if(Input.GetKey(KeyCode.E))
+      // {
+       //     Debug.Log("mouse Sbloccato");
+       //     Cursor.lockState = CursorLockMode.None;
+       //     Cursor.visible = true;
+       //     //mouseLook.enabled = false;
+       //}
+       //else if (Input.GetKey(KeyCode.E))
+       //{
+       //     Debug.Log("mouse bloccato");
+       //     Cursor.lockState = CursorLockMode.Locked;
+       //     Cursor.visible = false;
             //mouseLook.enabled = true;
-    }
+    //}
     
     }
     
