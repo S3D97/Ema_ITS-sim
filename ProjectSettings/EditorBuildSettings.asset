@@ -12,6 +12,8 @@ EditorBuildSettings:
     path: Assets/Scenes/ITS_Test.unity
     guid: 744147ecb77c09048b3e52880201c497
   m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: c2f59b4392742fe4d84849408c1c8485,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 536ea8f048fe75144ad69d00f7eb321f,
       type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e2e1c81c1fd1e364493cd2c676d7182f,

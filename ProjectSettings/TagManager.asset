@@ -15,9 +15,9 @@ TagManager:
   - Grabbable
   - Hand
   - HandPlayer
-  - 
-  - 
-  - 
+  - UI Collider
+  - Interaction
+  - whatIsGround
   - 
   - 
   - 
