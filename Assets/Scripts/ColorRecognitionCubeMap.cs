@@ -1,6 +1,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class SinglePixelColorExtractor : MonoBehaviour
 {
@@ -9,8 +10,10 @@ public class SinglePixelColorExtractor : MonoBehaviour
     public LayerMask interactionLayer;
     public Color targetColor;
 
+    public Camera mainCamera;
 
-    private Cubemap cubemap;
+
+    public Cubemap cubemap2;
 
  
 
@@ -33,7 +36,7 @@ public class SinglePixelColorExtractor : MonoBehaviour
                 if (material.HasProperty("_Cubemap"))
                 {
                     // Ottieni la cubemap dal materiale
-                    Cubemap cubemap = material.GetTexture("_Cubemap") as Cubemap;
+                    Cubemap cubemap2 = material.GetTexture("_Cubemap") as Cubemap;
 
                 }
             }
@@ -47,7 +50,7 @@ public class SinglePixelColorExtractor : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = Input.mousePosition;
-            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+            Ray ray =  mainCamera.ScreenPointToRay(mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, interactionLayer))
@@ -65,7 +68,7 @@ public class SinglePixelColorExtractor : MonoBehaviour
                 Vector2 uv = GetCubemapFaceUV(face, localPoint);
 
                 // Get the color of the pixel at the mouse pointer
-                Color pixelColor = GetPixelColor(cubemap, face, uv);
+                Color pixelColor = GetPixelColor(cubemap2, face, uv);
 
                 // Do something with the extracted pixel color
                 ProcessPixelColor(pixelColor);

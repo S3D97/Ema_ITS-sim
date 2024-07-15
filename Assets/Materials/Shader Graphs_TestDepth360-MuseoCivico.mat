@@ -50,7 +50,7 @@ Material:
     - _DEPTH_Power: 0.6
     - _Expansion: 0
     - _LOD_360: 0
-    - _LOD_DEPTH: 8.64
+    - _LOD_DEPTH: 10.17
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:

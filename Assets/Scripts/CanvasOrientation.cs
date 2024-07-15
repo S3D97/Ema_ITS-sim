@@ -2,26 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItsPlayerMovement : MonoBehaviour
+public class CanvasOrientation : MonoBehaviour
 {
-
-    public float sensX;
-    public float sensY;
-
-    public Transform itsorientation;
+    public Transform canvasorientation;
+    public Transform canvasPosition;
 
     float xRotation;
     float yRotation;
+    
+    public float sensX;
+    public float sensY;
 
-    
-    
-    void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
 
-    
+    // Update is called once per frame
     void Update()
     {
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
@@ -32,8 +25,9 @@ public class ItsPlayerMovement : MonoBehaviour
         xRotation -= mouseY;
         
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-        itsorientation.rotation = Quaternion.Euler(0, yRotation, 0);
+        canvasorientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+        transform.position = canvasPosition.position;
     }
 }

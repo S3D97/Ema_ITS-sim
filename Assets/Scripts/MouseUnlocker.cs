@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class MouseUnlocker : MonoBehaviour
 {
     // Riferimento alla classe generata per l'Input System
+    public Camera mainCam;
     private PlayerControls controls;
     private bool isMouseLocked = true;
 
@@ -32,6 +33,13 @@ public class MouseUnlocker : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            {
+                Debug.Log(hit.transform.name);
+                //Debug.Log("hit");
+            }
         }
         else
         {
