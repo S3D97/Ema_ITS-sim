@@ -7,6 +7,7 @@ public class RaycastController : MonoBehaviour
     public LineRenderer lineRenderer;
     public Camera mainCamera;
     public Sprite imagePrefab;
+    public Vector3 lineOffset;
 
     private bool isRaycastActive = false;
 
@@ -41,22 +42,22 @@ public class RaycastController : MonoBehaviour
         ActivateRaycast();
     }
 
-    void ActivateRaycast()
+    public void ActivateRaycast()
     {
         isRaycastActive = true;
         lineRenderer.enabled = true;
     }
 
-    void DeactivateRaycast()
+    public void DeactivateRaycast()
     {
         isRaycastActive = false;
         lineRenderer.enabled = false;
     }
 
-    void UpdateLineRenderer()
+    public void UpdateLineRenderer()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        lineRenderer.SetPosition(0, ray.origin);
+        lineRenderer.SetPosition(0, ray.origin + lineOffset);
         lineRenderer.SetPosition(1, ray.origin + ray.direction * 100); // Adjust the length as needed
     }
 }

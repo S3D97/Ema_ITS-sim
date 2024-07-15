@@ -9,6 +9,7 @@ public class InteractionManager : MonoBehaviour
     public Color targetColor;
     public Color targetColor2;
     public Color targetColor3;
+    
 
     void Start()
     {
