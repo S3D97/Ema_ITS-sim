@@ -1482,9 +1482,9 @@ MonoBehaviour:
   m_TrackedScrollDeltaMultiplier: 5
   m_ActiveInputMode: 0
   m_MaxTrackedDeviceRaycastDistance: 1000
-  m_EnableXRInput: 1
+  m_EnableXRInput: 0
   m_EnableMouseInput: 1
-  m_EnableTouchInput: 1
+  m_EnableTouchInput: 0
   m_PointAction: {fileID: 0}
   m_LeftClickAction: {fileID: 0}
   m_MiddleClickAction: {fileID: 0}
@@ -1537,7 +1537,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 386192582}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3db25e7af68fae448be32ac1f37480f, type: 3}
   m_Name: 
@@ -2353,6 +2353,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCam: {fileID: 1095837121}
+  uiCanvasGroup: {fileID: 1456418295}
 --- !u!1 &613539477
 GameObject:
   m_ObjectHideFlags: 0
@@ -4402,6 +4403,7 @@ GameObject:
   - component: {fileID: 1414291822}
   - component: {fileID: 1414291821}
   - component: {fileID: 1414291824}
+  - component: {fileID: 1414291825}
   m_Layer: 12
   m_Name: Ground
   m_TagString: Untagged
@@ -4491,10 +4493,32 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 9.999999, y: 2.2204459e-16, z: 9.999999}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!64 &1414291825
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414291819}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1427935231
 GameObject:
   m_ObjectHideFlags: 0
@@ -4536,6 +4560,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1456418294}
+  - component: {fileID: 1456418295}
   m_Layer: 0
   m_Name: -----UI-----
   m_TagString: Untagged
@@ -4563,6 +4588,18 @@ Transform:
   - {fileID: 1483009355}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!225 &1456418295
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456418293}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1462974691
 GameObject:
   m_ObjectHideFlags: 0
@@ -4620,6 +4657,7 @@ GameObject:
   - component: {fileID: 1483009355}
   - component: {fileID: 1483009357}
   - component: {fileID: 1483009356}
+  - component: {fileID: 1483009358}
   m_Layer: 0
   m_Name: LineRenderer
   m_TagString: Untagged
@@ -4654,11 +4692,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d56586a3ba6541a4daa70d93d7676a55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myButton: {fileID: 1990121607}
   lineRenderer: {fileID: 1483009357}
   mainCamera: {fileID: 1095837121}
-  imagePrefab: {fileID: 21300000, guid: 2ee8cbefbb4e7f84da61778b22cc66ab, type: 3}
+  imageIcon: {fileID: 21300000, guid: 2ee8cbefbb4e7f84da61778b22cc66ab, type: 3}
   lineOffset: {x: 0.3, y: -0.3, z: 0}
+  interaction:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!120 &1483009357
 LineRenderer:
   serializedVersion: 2
@@ -4763,6 +4803,25 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1483009358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483009354}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56586a3ba6541a4daa70d93d7676a55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineRenderer: {fileID: 1483009357}
+  mainCamera: {fileID: 1634597908}
+  imageIcon: {fileID: 21300000, guid: 2ee8cbefbb4e7f84da61778b22cc66ab, type: 3}
+  lineOffset: {x: 0.3, y: -0.2, z: 0}
+  interaction:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &1484346190
 GameObject:
   m_ObjectHideFlags: 0
@@ -5306,9 +5365,9 @@ MonoBehaviour:
   interactionLayer:
     serializedVersion: 2
     m_Bits: 2048
-  mainCamera: {fileID: 1634597908}
-  targetColor: {r: 1, g: 0, b: 0, a: 1}
-  targetColor2: {r: 0, g: 0.05740881, b: 1, a: 1}
+  mainCamera: {fileID: 1095837121}
+  targetColor: {r: 0.9960785, g: 0, b: 0, a: 0}
+  targetColor2: {r: 0, g: 0.19607845, b: 0.9960785, a: 0}
   targetColor3: {r: 0.06587124, g: 1, b: 0, a: 1}
 --- !u!64 &1689864262
 MeshCollider:
@@ -5339,7 +5398,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1689864260}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -6396,6 +6455,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1483009356}
+        m_TargetAssemblyTypeName: RaycastController, Assembly-CSharp
+        m_MethodName: ActivateRaycast
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &1990121608
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6678,7 +6749,7 @@ PrefabInstance:
     - target: {fileID: 6728087663728145429, guid: 788cb8956bf67034e97f2bbea3284be8,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.47799993
+      value: -0.246
       objectReference: {fileID: 0}
     - target: {fileID: 6728087663728145429, guid: 788cb8956bf67034e97f2bbea3284be8,
         type: 3}
@@ -6951,6 +7022,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2537358029227529296, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2537358029227529296, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2537358029227529296, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2537358029227529296, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6955158478164567125, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
         type: 3}
       propertyPath: m_Name
@@ -6961,6 +7052,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8670304218604287473, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b4d9f48372c2de469506e131a481684, type: 2}
     - target: {fileID: 9143811325409588026, guid: 9e4ae1138a742c24cb0d1a2e6f60b7aa,
         type: 3}
       propertyPath: jumpForce
