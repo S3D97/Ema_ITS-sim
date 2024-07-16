@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InteractionManager : MonoBehaviour
+public class ColorRecognition : MonoBehaviour
 {
-    public LayerMask interactionLayer; // LayerMask per il layer "Interaction"
+    public LayerMask interaction; // LayerMask per il layer "Interaction"
     public Camera mainCamera; // Riferimento alla main camera
-    public Color targetColor;
-    public Color targetColor2;
-    public Color targetColor3;
+
     
+    public Color targetColor;
+    //public Color targetColor2;
+    //public Color targetColor3;
 
     void Start()
     {
@@ -26,12 +27,13 @@ public class InteractionManager : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            Debug.Log("Raycasting");
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, interactionLayer))
+            //Debug.Log("Raycasting");
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, interaction))
             {
                 Debug.Log("Hit!");
                 Renderer renderer = hit.collider.GetComponent<Renderer>();
                 MeshCollider meshCollider = hit.collider as MeshCollider;
+            
 
                 if (renderer != null && renderer.material.mainTexture != null && meshCollider != null)
                 {
@@ -43,9 +45,10 @@ public class InteractionManager : MonoBehaviour
                     Color color = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
                     Debug.Log("Colore del pixel: " + color);
                     targetColor = color;
-                    targetColor2 = color;
-                    targetColor3 = color;
+                    //targetColor2 = color;
+                    //targetColor3 = color;
                 }
+                
             }
         }
     }
