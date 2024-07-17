@@ -1,8 +1,9 @@
-using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using System.IO;
+using Unity.VisualScripting;
 
 public class RaycastController : MonoBehaviour
 {
@@ -10,35 +11,40 @@ public class RaycastController : MonoBehaviour
     public Camera mainCamera;
     public GameObject imageIcon;
     public Vector3 lineOffset;
-    public float lineRendereDistance;
-    public int interaction;
+    public float lineRendererDistance;
     public Color excludeColor;
+    
+    private int _interaction;
+    private bool _doneTask;
 
     public TextMeshProUGUI timerUi;
     public bool timerConfirm;
     public float remainingTime;
+    public float timerTime;
+    public GameObject doneButton;
+    
 
-    // Array di colori da riconoscere
     public Color[] targetColors;
-    // Dizionario per contare le occorrenze di ogni colore
+    public Dictionary<Color, GameObject> colorToIconMap = new Dictionary<Color, GameObject>();
     private Dictionary<Color, int> colorCounts = new Dictionary<Color, int>();
 
     private bool isRaycastActive = false;
+    private List<ImageIconData> imageIconsData = new List<ImageIconData>();
+    
+    
 
     void Start()
     {
         lineRenderer.enabled = false;
 
-        // Inizializza il dizionario dei contatori dei colori
         foreach (var color in targetColors)
         {
             colorCounts[color] = 0;
         }
 
-        interaction = LayerMask.GetMask("Interaction");
-        remainingTime = 10; 
-        
-        }
+        _interaction = LayerMask.GetMask("Interaction");
+        remainingTime = timerTime; 
+    }
 
     void Update()
     {
@@ -47,16 +53,14 @@ public class RaycastController : MonoBehaviour
             UpdateLineRenderer();
             StartTimer();
             TimerPointerPhase();
-            
 
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 
-                if (Physics.Raycast(ray, out hit, lineRendereDistance, interaction))
+                if (Physics.Raycast(ray, out hit, lineRendererDistance, _interaction))
                 {
-                    // Riconoscimento del colore del pixel
                     Renderer renderer = hit.collider.GetComponent<Renderer>();
                     if (renderer != null)
                     {
@@ -67,26 +71,34 @@ public class RaycastController : MonoBehaviour
                         Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
                         if (hitColor == excludeColor)
                         {
-                           return; 
+                            return;
                         }
 
-                        // Controlla se il colore colpito è uno dei colori target
-                        foreach (var targetColor in targetColors)
+                        foreach (var targetColor in targetColors) //controllo sui target color della scena
                         {
-                            if (ColorsAreEqual(hitColor, targetColor) && timerUi)
+                            if (ColorsAreEqual(hitColor, targetColor) && timerConfirm) //metodo che confronta i colori target con quelli presi dal raycast
                             {
-                                Instantiate(imageIcon, hit.point, Quaternion.identity);
-                                imageIcon.transform.position = hit.point;
+                                doneButton.SetActive(true); //per fermare prima il posizionamento dei pointer se si finisce prima del tempo
+                                GameObject iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity); //posizionamento pointer su hitpoint del raycast
+                                iconInstance.transform.position = hit.point;
                                 colorCounts[targetColor]++;
+                                imageIconsData.Add(new ImageIconData //json del punto cliccato con il colore
+                                {
+                                    Position = hit.point,
+                                    Color = new SerializableColor(targetColor)
+                                });
                                 Debug.Log($"Colore {targetColor} selezionato. Conteggio: {colorCounts[targetColor]}");
                                 break;
                             }
-                           
                         }
                     }
 
+                    if (timerConfirm == false || _doneTask == true)
+                    {
+                        DeactivateRaycast();
+                        remainingTime = 0;
+                    }
                     
-                    DeactivateRaycast();
                 }
             }
         }
@@ -108,10 +120,9 @@ public class RaycastController : MonoBehaviour
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         lineRenderer.SetPosition(0, ray.origin + lineOffset);
-        lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendereDistance); 
+        lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
     }
 
-    // Funzione per confrontare due colori con una tolleranza
     private bool ColorsAreEqual(Color color1, Color color2, float tolerance = 0.1f)
     {
         return Mathf.Abs(color1.r - color2.r) < tolerance &&
@@ -119,9 +130,9 @@ public class RaycastController : MonoBehaviour
                Mathf.Abs(color1.b - color2.b) < tolerance;
     }
 
-    public void TimerPointerPhase()
+    private void TimerPointerPhase()
     {
-       if (timerConfirm)
+        if (timerConfirm)
         {
             if (remainingTime > 0)
             {
@@ -133,10 +144,13 @@ public class RaycastController : MonoBehaviour
                 timerConfirm = false;
                 remainingTime = 0;
                 UpdateTimerText();
-                Debug.Log("5 minuti sono passati. Il flag è ora vero.");
+                SaveImageIconsData();
+                Debug.Log("Il tempo è scaduto!");
+                DeactivateRaycast();
             }
         }
     }
+
     void StartTimer()
     {
         timerConfirm = true;
@@ -147,5 +161,62 @@ public class RaycastController : MonoBehaviour
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int seconds = Mathf.FloorToInt(remainingTime % 60);
         timerUi.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    public void SaveImageIconsData()
+    {
+        string json = JsonUtility.ToJson(new ImageIconsDataList { Icons = imageIconsData });
+        File.WriteAllText(Application.persistentDataPath + "/ImageIconsData.json", json);
+    }
+
+    public void LoadImageIconsData()
+    {
+        string path = Application.persistentDataPath + "/ImageIconsData.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
+            foreach (var data in loadedData.Icons)
+            {
+                GameObject iconInstance = Instantiate(imageIcon, data.Position, Quaternion.identity);
+                iconInstance.transform.position = data.Position;
+                // Aggiungere logica per mappare colori a icone specifiche sui pointer (tipo rampa, pedana, etc.)
+            }
+        }
+    }
+
+    [System.Serializable]
+    public class ImageIconData
+    {
+        // dati da salvare per i pointer
+        public Vector3 Position;
+        public SerializableColor Color;
+    }
+
+    [System.Serializable]
+    public class SerializableColor
+    {
+        public float r, g, b, a;
+
+        public SerializableColor(Color color)
+        {
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a;
+        }
+
+        public static implicit operator Color(SerializableColor c) => new Color(c.r, c.g, c.b, c.a);
+    }
+
+    [System.Serializable]
+    public class ImageIconsDataList
+    {
+        public List<ImageIconData> Icons;
+    }
+
+    public void DoneTask()
+    {
+        _doneTask = true;
     }
 }
