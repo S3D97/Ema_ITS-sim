@@ -27,7 +27,7 @@ public class ColorRecognition : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            //Debug.Log("Raycasting");
+            Debug.Log("Raycasting");
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, interaction))
             {
                 Debug.Log("Hit!");

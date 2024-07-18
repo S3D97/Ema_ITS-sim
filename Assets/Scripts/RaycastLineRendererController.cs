@@ -15,7 +15,7 @@ public class RaycastController : MonoBehaviour
     public Color excludeColor;
     
     private int _interaction;
-    private bool _doneTask;
+    private bool _doneTask = false;
 
     public TextMeshProUGUI timerUi;
     public bool timerConfirm;
@@ -30,6 +30,8 @@ public class RaycastController : MonoBehaviour
 
     private bool isRaycastActive = false;
     private List<ImageIconData> imageIconsData = new List<ImageIconData>();
+
+    private List<ObjectIconData> objectIconDatas = new List<ObjectIconData>();
     
     
 
@@ -44,6 +46,7 @@ public class RaycastController : MonoBehaviour
 
         _interaction = LayerMask.GetMask("Interaction");
         remainingTime = timerTime; 
+        doneButton.GetComponent<Button>().onClick.AddListener(DeactivateRaycast);
     }
 
     void Update()
@@ -93,10 +96,9 @@ public class RaycastController : MonoBehaviour
                         }
                     }
 
-                    if (timerConfirm == false || _doneTask == true)
+                    if (_doneTask == true || timerConfirm == false)
                     {
                         DeactivateRaycast();
-                        remainingTime = 0;
                     }
                     
                 }
@@ -114,6 +116,9 @@ public class RaycastController : MonoBehaviour
     {
         isRaycastActive = false;
         lineRenderer.enabled = false;
+        remainingTime = 0f; // Resetta il timer a 0
+        timerUi.text = ""; // pulisce il testo del timer
+        timerUi.enabled = false; // Disattiva testo del timer
     }
 
     public void UpdateLineRenderer()
@@ -143,6 +148,7 @@ public class RaycastController : MonoBehaviour
             {
                 timerConfirm = false;
                 remainingTime = 0;
+                doneButton.SetActive(false);
                 UpdateTimerText();
                 SaveImageIconsData();
                 Debug.Log("Il tempo è scaduto!");
@@ -194,6 +200,14 @@ public class RaycastController : MonoBehaviour
     }
 
     [System.Serializable]
+    public class ObjectIconData
+    {
+        // dati da salvare per gli oggetti (rampa,pedana, etc.)
+        public Vector3 ObjectPosition;
+        public SerializableColor ObjectColor;
+    }
+
+    [System.Serializable]
     public class SerializableColor
     {
         public float r, g, b, a;
@@ -213,6 +227,13 @@ public class RaycastController : MonoBehaviour
     public class ImageIconsDataList
     {
         public List<ImageIconData> Icons;
+    }
+
+
+    [System.Serializable]
+    public class ObjectIconList
+    {
+        public List<ObjectIconData> Objects;
     }
 
     public void DoneTask()
