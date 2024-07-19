@@ -22,6 +22,7 @@ public class RaycastController : MonoBehaviour
     public float remainingTime;
     public float timerTime;
     public GameObject doneButton;
+    public GameObject exhibitionPanel;
     
 
     public Color[] targetColors;
@@ -43,7 +44,8 @@ public class RaycastController : MonoBehaviour
         {
             colorCounts[color] = 0;
         }
-
+        
+        exhibitionPanel.SetActive(true);
         _interaction = LayerMask.GetMask("Interaction");
         remainingTime = timerTime; 
         doneButton.GetComponent<Button>().onClick.AddListener(DeactivateRaycast);
