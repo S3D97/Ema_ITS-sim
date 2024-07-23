@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
 using JetBrains.Annotations;
+using UnityEngine.InputSystem;
+using UnityEditor;
 
 public class RaycastController : MonoBehaviour
 {
@@ -26,7 +28,7 @@ public class RaycastController : MonoBehaviour
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
 
-    public GameObject[] solutionObjects;
+    
     
 
     public Color[] targetColors;
@@ -36,7 +38,8 @@ public class RaycastController : MonoBehaviour
     private bool isRaycastActive = false;
     private List<ImageIconData> imageIconsData = new List<ImageIconData>();
 
-    private List<ObjectIconData> objectIconDatas = new List<ObjectIconData>();
+    public Dictionary<Color, GameObject> SolutionObjectsDictionary = new Dictionary<Color, GameObject>();
+    public SolutionObjectsDictionary solutionObjectsDictionary;
     
     
 
@@ -53,6 +56,7 @@ public class RaycastController : MonoBehaviour
         _interaction = LayerMask.GetMask("Interaction");
         remainingTime = timerTime; 
         doneButton.GetComponent<Button>().onClick.AddListener(DeactivateRaycast);
+        
     }
 
     void Update()
@@ -206,13 +210,7 @@ public class RaycastController : MonoBehaviour
         public SerializableColor Color;
     }
 
-    [System.Serializable]
-    public class ObjectIconData
-    {
-        // dati da salvare per gli oggetti (rampa,pedana, etc.)
-        public Vector3 ObjectPosition;
-        public SerializableColor ObjectColor;
-    }
+    
 
     [System.Serializable]
     public class SerializableColor
@@ -237,11 +235,7 @@ public class RaycastController : MonoBehaviour
     }
 
 
-    [System.Serializable]
-    public class ObjectIconList
-    {
-        public List<ObjectIconData> Objects;
-    }
+    
 
     public void DoneTask()
     {
@@ -268,6 +262,7 @@ private void NewTimerPointerPhase()
     {
         if (remainingTime > 0)
         {
+            PlaceObjectsSolution();
             remainingTime -= Time.deltaTime;
             UpdateTimerText();
         }
@@ -276,32 +271,41 @@ private void NewTimerPointerPhase()
             timerConfirm = false;
             remainingTime = 0;
             UpdateTimerText();
+            DeactivateRaycast();
         }
     }
 }
 
-/* private void PlaceObjectsSolution()
-    {
-        foreach (GameObject solutionObject in solutionObjects)
-    {
-        // Colore dal materiale
-        Color solutionColor = solutionObject.GetComponent<Renderer>().material.color; 
 
-        // Controllo sul colore del pointer
-        if (solutionColor == targetColors)
-        {
-            ActivateRaycast();
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+
+    private void PlaceObjectsSolution()
+{
+    string path = Application.persistentDataPath + "/ImageIconsData.json";
+    string json = File.ReadAllText(path);
+    ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
+    
+    
+    
+
+    foreach (var data in loadedData.Icons)
+    {
+        
+        //Vector3 position = data.Position;
+        Color referenceColor = data.Color;
+        
 
         
-            if (Physics.Raycast(ray, out hit, _interaction))
-            {
-                // Piazza l'oggetto in posizione
-                solutionObject.transform.position = hit.point;
-            }
+        if (solutionObjectsDictionary.SolutionObjectsNames.TryGetValue(referenceColor, out GameObject solutionObject))
+        {
+            // metodo raycast per posizionare l'oggetto nell'hitpoint
+            //solutionObject.transform.position = hit.position;
+        }
+        else
+        {
+            Debug.LogError($"No game object found in dictionary for color {referenceColor}");
         }
     }
-    } */
+}
+
 }
 
