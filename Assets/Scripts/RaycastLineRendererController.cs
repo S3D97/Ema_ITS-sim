@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
+using JetBrains.Annotations;
 
 public class RaycastController : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class RaycastController : MonoBehaviour
     public GameObject doneButton;
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
+
+    public GameObject[] solutionObjects;
     
 
     public Color[] targetColors;
@@ -119,9 +122,9 @@ public class RaycastController : MonoBehaviour
     {
         isRaycastActive = false;
         lineRenderer.enabled = false;
-        remainingTime = 0f; // Resetta il timer a 0
-        timerUi.text = ""; // pulisce il testo del timer
-        timerUi.enabled = false; // Disattiva testo del timer
+        remainingTime = 0f; 
+        timerUi.text = ""; 
+        timerUi.enabled = false; 
     }
 
     public void UpdateLineRenderer()
@@ -254,29 +257,11 @@ public class RaycastController : MonoBehaviour
         float newTimerTime = 30f; 
         remainingTime = newTimerTime;
         timerConfirm = true;
-
-        // lista per i prefab oggetti per soluzioni
-        List<GameObject> prefabsToPlace = new List<GameObject>();
-
-        foreach (Color targetColor in targetColors)
-        {
-            GameObject prefab = CreatePrefabWithColor(targetColor);
-            prefabsToPlace.Add(prefab);
-        }
-
-        TimerPointerPhase(prefabsToPlace);
+        timerUi.enabled = true; 
+        NewTimerPointerPhase();
 }
-
-private GameObject CreatePrefabWithColor(Color color)
-{
-    // creazione prefab con input colori
-    GameObject prefab = new GameObject();
-    prefab.GetComponent<Renderer>().material.color = color;
-
-    return prefab;
-}
-
-private void TimerPointerPhase(List<GameObject> prefabsToPlace)
+    
+private void NewTimerPointerPhase()
 {
     
     if (timerConfirm)
@@ -291,40 +276,32 @@ private void TimerPointerPhase(List<GameObject> prefabsToPlace)
             timerConfirm = false;
             remainingTime = 0;
             UpdateTimerText();
-
-            // Place the prefabs
-            foreach (GameObject prefab in prefabsToPlace)
-            {
-                PlacePrefab(prefab);
-            }
         }
     }
 }
 
-private void PlacePrefab(GameObject prefab)
-{
-    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-    RaycastHit hit;
-
-    if (Physics.Raycast(ray, out hit, lineRendererDistance, _interaction))
+/* private void PlaceObjectsSolution()
     {
-        Renderer renderer = hit.collider.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            Texture2D texture = renderer.material.mainTexture as Texture2D;
-            Vector2 pixelUV = hit.textureCoord;
-            pixelUV.x *= texture.width;
-            pixelUV.y *= texture.height;
-            Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+        foreach (GameObject solutionObject in solutionObjects)
+    {
+        // Colore dal materiale
+        Color solutionColor = solutionObject.GetComponent<Renderer>().material.color; 
 
-            // Controlla che il colore sia corretto
-            if (ColorsAreEqual(hitColor, prefab.GetComponent<Renderer>().material.color))
+        // Controllo sul colore del pointer
+        if (solutionColor == targetColors)
+        {
+            ActivateRaycast();
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+        
+            if (Physics.Raycast(ray, out hit, _interaction))
             {
-                // piazza il prefab
-                GameObject instance = Instantiate(prefab, hit.point, Quaternion.identity);
-                instance.transform.position = hit.point;
+                // Piazza l'oggetto in posizione
+                solutionObject.transform.position = hit.point;
             }
         }
     }
+    } */
 }
-}
+
