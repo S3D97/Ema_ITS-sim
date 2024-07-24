@@ -19,7 +19,13 @@ public class SolutionObjectsDictionary : MonoBehaviour
         foreach (var item in solutionDict)
         {
             SolutionObjectsNames.Add(item.referenceColor, item.referenceObj);
+            // Color referenceColor = item.referenceColor;
+            // float r = referenceColor.r;
+            // float g = referenceColor.g;
+            // float b = referenceColor.b;
+            // float a = referenceColor.a;
         }
+        
 
     }
 
@@ -34,6 +40,8 @@ public class SolutionDictItem
     
     [SerializeField]
     public Color referenceColor;
+    
+    
 }
 
 
@@ -42,6 +50,8 @@ public class NewDict
 {
    [SerializeField]
    SolutionDictItem[] solutionDict; 
+   
+   
 
    
 
@@ -49,6 +59,7 @@ public class NewDict
    {
     
     Dictionary<Color, GameObject> solutionDict = new Dictionary<Color, GameObject>();
+    
     
 
     foreach (var item in solutionDict)

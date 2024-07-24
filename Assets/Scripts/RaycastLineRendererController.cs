@@ -184,23 +184,24 @@ public class RaycastController : MonoBehaviour
     {
         string json = JsonUtility.ToJson(new ImageIconsDataList { Icons = imageIconsData });
         File.WriteAllText(Application.persistentDataPath + "/ImageIconsData.json", json);
+        Debug.Log("Dati jason salvati correttamente");
     }
 
-    public void LoadImageIconsData()
-    {
-        string path = Application.persistentDataPath + "/ImageIconsData.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-            foreach (var data in loadedData.Icons)
-            {
-                GameObject iconInstance = Instantiate(imageIcon, data.Position, Quaternion.identity);
-                iconInstance.transform.position = data.Position;
-                // Aggiungere logica per mappare colori a icone specifiche sui pointer (tipo rampa, pedana, etc.)
-            }
-        }
-    }
+    // public void LoadImageIconsData()
+    // {
+    //     string path = Application.persistentDataPath + "/ImageIconsData.json";
+    //     if (File.Exists(path))
+    //     {
+    //         string json = File.ReadAllText(path);
+    //         ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
+    //         foreach (var data in loadedData.Icons)
+    //         {
+    //             GameObject iconInstance = Instantiate(imageIcon, data.Position, Quaternion.identity);
+    //             iconInstance.transform.position = data.Position;
+    //             // Aggiungere logica per mappare colori a icone specifiche sui pointer (tipo rampa, pedana, etc.)
+    //         }
+    //     }
+    // }
 
     [System.Serializable]
     public class ImageIconData
@@ -278,34 +279,41 @@ private void NewTimerPointerPhase()
 
 
 
-    private void PlaceObjectsSolution()
+private void PlaceObjectsSolution()
 {
     string path = Application.persistentDataPath + "/ImageIconsData.json";
-    string json = File.ReadAllText(path);
-    ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-    
-    
-    
-
-    foreach (var data in loadedData.Icons)
+    if (File.Exists(path))
     {
-        
-        //Vector3 position = data.Position;
-        Color referenceColor = data.Color;
-        
+        string json = File.ReadAllText(path);
+        ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
 
-        
-        if (solutionObjectsDictionary.SolutionObjectsNames.TryGetValue(referenceColor, out GameObject solutionObject))
+        foreach (var data in loadedData.Icons)
         {
-            // metodo raycast per posizionare l'oggetto nell'hitpoint
-            //solutionObject.transform.position = hit.position;
-        }
-        else
-        {
-            Debug.LogError($"No game object found in dictionary for color {referenceColor}");
+            Vector3 position = data.Position;
+            Color jsonColor = data.Color;
+
+            
+            foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
+            {
+                if (ColorsAreEqual(jsonColor, entry.Key))
+                {
+                    GameObject solutionObject = entry.Value;
+                    Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
+                    if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
+                    {
+                        solutionObject.transform.position = hit.point;
+                    }
+                    else
+                    { 
+                        Debug.LogError("Se so rubati i COLORI, chi si è rubato i COLORI");
+                    }
+                    break;
+                }
+            }
         }
     }
 }
-
 }
+
+
 
