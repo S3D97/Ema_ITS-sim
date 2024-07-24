@@ -24,6 +24,7 @@ public class RaycastController : MonoBehaviour
     public bool timerConfirm;
     public float remainingTime;
     public float timerTime;
+    public float newTimerTime;
     public GameObject doneButton;
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
@@ -249,7 +250,6 @@ public class RaycastController : MonoBehaviour
         exhibitionPanel1.SetActive(true);
     
         // Nuovo Timer
-        float newTimerTime = 30f; 
         remainingTime = newTimerTime;
         timerConfirm = true;
         timerUi.enabled = true; 

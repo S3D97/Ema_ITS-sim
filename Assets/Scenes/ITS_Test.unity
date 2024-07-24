@@ -1462,6 +1462,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 720096245}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &252132045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1826,6 +1838,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SolutionObjectCanvas (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1187080884685191928, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611781423927767894, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
@@ -2368,6 +2385,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SolutionObjectCanvas (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1187080884685191928, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611781423927767894, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
@@ -4124,6 +4146,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SolutionObjectCanvas (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1187080884685191928, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6611781423927767894, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
@@ -6022,6 +6049,7 @@ MonoBehaviour:
   timerConfirm: 0
   remainingTime: 0
   timerTime: 10
+  newTimerTime: 10
   doneButton: {fileID: 871936837}
   exhibitionPanel: {fileID: 742136479}
   exhibitionPanel1: {fileID: 677897736}
@@ -6081,8 +6109,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.8354594
-        value: 0.029708862
+        time: 0.70008343
+        value: 0.008575439
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -6094,7 +6122,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0, g: 1, b: 0.9717827, a: 1}
+      key0: {r: 0, g: 0.9813695, b: 1, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -6122,7 +6150,7 @@ LineRenderer:
       m_ColorSpace: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 34
+    numCornerVertices: 90
     numCapVertices: 90
     alignment: 0
     textureMode: 0
@@ -8958,6 +8986,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8832971789761470621, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8832971789761470621, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8832971789761470621, guid: 257f13f5b6df39d4ea668d1633755015,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.99607843
       objectReference: {fileID: 0}
     - target: {fileID: 8832971789761470621, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
