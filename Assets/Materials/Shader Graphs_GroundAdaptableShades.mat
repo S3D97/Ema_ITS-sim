@@ -43,7 +43,7 @@ Material:
     - _FresnelPower: 6.1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _SceneColoIntensity: -1.95
+    - _SceneColoIntensity: -2.9
     m_Colors:
     - _SceneColor: {r: 0.3529412, g: 0.27058825, b: 0.21176472, a: 1}
   m_BuildTextureStacks: []

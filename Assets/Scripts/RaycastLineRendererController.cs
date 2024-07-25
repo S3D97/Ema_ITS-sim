@@ -25,6 +25,7 @@ public class RaycastController : MonoBehaviour
     public float remainingTime;
     public float timerTime;
     public float newTimerTime;
+    public bool newTimerStart = false;
     public GameObject doneButton;
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
@@ -258,12 +259,12 @@ public class RaycastController : MonoBehaviour
     
 private void NewTimerPointerPhase()
 {
-    
+    newTimerStart = true;
     if (timerConfirm)
     {
         if (remainingTime > 0)
         {
-            PlaceObjectsSolution();
+            //PlaceObjectsSolution();
             remainingTime -= Time.deltaTime;
             UpdateTimerText();
         }
@@ -279,9 +280,47 @@ private void NewTimerPointerPhase()
 
 
 
-private void PlaceObjectsSolution()
+// private void PlaceObjectsSolution()
+// {
+//     string path = Application.persistentDataPath + "/ImageIconsData.json";
+//     if (File.Exists(path))
+//     {
+//         string json = File.ReadAllText(path);
+//         ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
+//
+//         foreach (var data in loadedData.Icons)
+//         {
+//             Vector3 position = data.Position;
+//             Color jsonColor = data.Color;
+//
+//             
+//             foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
+//             {
+//                 if (ColorsAreEqual(jsonColor, entry.Key))
+//                 {
+//                     GameObject solutionObject = entry.Value;
+//                     Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
+//                     if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
+//                     {
+//                         solutionObject.transform.position = hit.point;
+//                     }
+//                     else
+//                     { 
+//                         Debug.LogError("Se so rubati i COLORI, chi si è rubato i COLORI");
+//                     }
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
+public void PlaceObjectsSolution()
 {
-    string path = Application.persistentDataPath + "/ImageIconsData.json";
+    if (newTimerStart == true)
+    { 
+        string path = Application.persistentDataPath + "/ImageIconsData.json";
     if (File.Exists(path))
     {
         string json = File.ReadAllText(path);
@@ -292,25 +331,52 @@ private void PlaceObjectsSolution()
             Vector3 position = data.Position;
             Color jsonColor = data.Color;
 
-            
             foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
             {
                 if (ColorsAreEqual(jsonColor, entry.Key))
                 {
                     GameObject solutionObject = entry.Value;
                     Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
+
+                    ActivateRaycast();
+                    // lineRenderer.enabled = true;
+                    // lineRenderer.SetPosition(0, ray.origin + lineOffset);
+                    // lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
+
                     if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
                     {
-                        solutionObject.transform.position = hit.point;
+                        // Posiziona l'oggetto solo se il colore corrisponde
+                        Renderer renderer = hit.collider.GetComponent<Renderer>();
+                        if (renderer != null)
+                        {
+                            Texture2D texture = renderer.material.mainTexture as Texture2D;
+                            Vector2 pixelUV = hit.textureCoord;
+                            pixelUV.x *= texture.width;
+                            pixelUV.y *= texture.height;
+                            Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                            if (ColorsAreEqual(hitColor, jsonColor))
+                            {
+                                solutionObject.transform.position = hit.point;
+                                Debug.Log("Sei un cecchino");
+                            }
+                            else
+                            {
+                                Debug.LogError("Hai sbagliato colore, sempre e solo giallo rosso");
+                            }
+                        }
                     }
                     else
-                    { 
-                        Debug.LogError("Se so rubati i COLORI, chi si è rubato i COLORI");
+                    {
+                        Debug.LogError("Missed me");
                     }
+
+                    // Disabilita il LineRenderer dopo aver posizionato l'oggetto per poi premere di nuovo il bottone?
+                    DeactivateRaycast();
                     break;
                 }
             }
         }
+    }
     }
 }
 }
