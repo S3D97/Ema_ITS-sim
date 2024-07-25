@@ -29,6 +29,8 @@ public class RaycastController : MonoBehaviour
     public GameObject doneButton;
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
+    public GameObject exhibitionPanel2;
+    public GameObject[] solutionsButtons;
 
     
     
@@ -118,13 +120,13 @@ public class RaycastController : MonoBehaviour
         }
     }
 
-    public void ActivateRaycast()
+    private void ActivateRaycast()
     {
         isRaycastActive = true;
         lineRenderer.enabled = true;
     }
 
-    public void DeactivateRaycast()
+    private void DeactivateRaycast()
     {
         isRaycastActive = false;
         lineRenderer.enabled = false;
@@ -133,7 +135,7 @@ public class RaycastController : MonoBehaviour
         timerUi.enabled = false; 
     }
 
-    public void UpdateLineRenderer()
+    private void UpdateLineRenderer()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         lineRenderer.SetPosition(0, ray.origin + lineOffset);
@@ -249,6 +251,13 @@ public class RaycastController : MonoBehaviour
     private void TimerStopped() 
     {
         exhibitionPanel1.SetActive(true);
+        foreach (var ObjectButton in solutionsButtons)
+        {
+            if (ObjectButton != null)
+            {
+                ObjectButton.SetActive(true);
+            } 
+        }
     
         // Nuovo Timer
         remainingTime = newTimerTime;
@@ -272,6 +281,7 @@ private void NewTimerPointerPhase()
         {
             timerConfirm = false;
             remainingTime = 0;
+            exhibitionPanel2.SetActive(true);
             UpdateTimerText();
             DeactivateRaycast();
         }
@@ -335,8 +345,11 @@ public void PlaceObjectsSolution()
             {
                 if (ColorsAreEqual(jsonColor, entry.Key))
                 {
+                    
                     GameObject solutionObject = entry.Value;
                     Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
+                    
+                    
 
                     ActivateRaycast();
                     // lineRenderer.enabled = true;
@@ -356,7 +369,8 @@ public void PlaceObjectsSolution()
                             Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
                             if (ColorsAreEqual(hitColor, jsonColor))
                             {
-                                solutionObject.transform.position = hit.point;
+                                GameObject solutionObjectInstance = Instantiate(solutionObject, hit.point, Quaternion.identity); //posizionamento oggetto su hitpoint del raycast
+                                solutionObjectInstance.transform.position = hit.point;
                                 Debug.Log("Sei un cecchino");
                             }
                             else
