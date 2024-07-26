@@ -32,6 +32,16 @@ public class RaycastController : MonoBehaviour
     public GameObject exhibitionPanel2;
     public GameObject[] solutionsButtons;
 
+
+    private bool hitNewPoint = false;
+    private Vector3 hitPoint;
+
+    public bool objectPositioning = false;
+
+    public Vector3 myJsonPosition;
+
+    
+
     
     
 
@@ -118,7 +128,7 @@ public class RaycastController : MonoBehaviour
                 }
             }
         }
-    }
+     }
 
     private void ActivateRaycast()
     {
@@ -264,7 +274,11 @@ public class RaycastController : MonoBehaviour
         timerConfirm = true;
         timerUi.enabled = true; 
         NewTimerPointerPhase();
-}
+        
+    }
+
+
+
     
 private void NewTimerPointerPhase()
 {
@@ -285,6 +299,7 @@ private void NewTimerPointerPhase()
             UpdateTimerText();
             DeactivateRaycast();
         }
+        newTimerStart = false;
     }
 }
 
@@ -325,73 +340,83 @@ private void NewTimerPointerPhase()
 //     }
 // }
 
+public void ActiveInstantiatingObject()
+{
+   objectPositioning = true; 
+}
+
+
 
 public void PlaceObjectsSolution()
 {
-    if (newTimerStart == true)
-    { 
-        string path = Application.persistentDataPath + "/ImageIconsData.json";
-    if (File.Exists(path))
+    //if (newTimerStart == true)
     {
-        string json = File.ReadAllText(path);
-        ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-
-        foreach (var data in loadedData.Icons)
+        string path = Application.persistentDataPath + "/ImageIconsData.json";
+        if (File.Exists(path))
         {
-            Vector3 position = data.Position;
-            Color jsonColor = data.Color;
+            string json = File.ReadAllText(path);
+            ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
 
-            foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
+            foreach (var data in loadedData.Icons)
             {
-                if (ColorsAreEqual(jsonColor, entry.Key))
+                Vector3 jsonPosition = data.Position;
+                myJsonPosition = data.Position;
+                Color jsonColor = data.Color;
+
+                foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
                 {
-                    
-                    GameObject solutionObject = entry.Value;
-                    Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
-                    
-                    
-
-                    ActivateRaycast();
-                    // lineRenderer.enabled = true;
-                    // lineRenderer.SetPosition(0, ray.origin + lineOffset);
-                    // lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
-
-                    if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
+                    if (ColorsAreEqual(jsonColor, entry.Key))
                     {
-                        // Posiziona l'oggetto solo se il colore corrisponde
-                        Renderer renderer = hit.collider.GetComponent<Renderer>();
-                        if (renderer != null)
+                        GameObject solutionObject = entry.Value;
+                        Ray ray = new Ray(mainCamera.transform.position, jsonPosition - mainCamera.transform.position);
+
+                        
+                        lineRenderer.enabled = true;
+                        lineRenderer.SetPosition(0, ray.origin + lineOffset);
+                        lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
+
+                        if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
                         {
-                            Texture2D texture = renderer.material.mainTexture as Texture2D;
-                            Vector2 pixelUV = hit.textureCoord;
-                            pixelUV.x *= texture.width;
-                            pixelUV.y *= texture.height;
-                            Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                            if (ColorsAreEqual(hitColor, jsonColor))
-                            {
-                                GameObject solutionObjectInstance = Instantiate(solutionObject, hit.point, Quaternion.identity); //posizionamento oggetto su hitpoint del raycast
-                                solutionObjectInstance.transform.position = hit.point;
-                                Debug.Log("Sei un cecchino");
-                            }
-                            else
-                            {
-                                Debug.LogError("Hai sbagliato colore, sempre e solo giallo rosso");
-                            }
+                            hitNewPoint = true;
+                            hitPoint = hit.point;
+                       
                         }
-                    }
-                    else
-                    {
-                        Debug.LogError("Missed me");
-                    }
+                        else
+                        {
+                            hitNewPoint = false;
+                        }
+                              // Posizione solutionObjevct clone su nuovo hitpoint
+                        if (hitNewPoint  ) //  && hitPoint == jsonPosition && objectPositioning
+                        {
+                            InstantiateSolutionObject(solutionObject, hitPoint);
+                        }
 
-                    // Disabilita il LineRenderer dopo aver posizionato l'oggetto per poi premere di nuovo il bottone?
-                    DeactivateRaycast();
-                    break;
+                       
+                        DeactivateRaycast();
+                    
+                        break;
+                    }
                 }
             }
         }
     }
+}
+
+
+
+
+
+public void InstantiateSolutionObject(GameObject solutionObject, Vector3 hitPoint)
+{
+    if (hitPoint == myJsonPosition && objectPositioning)
+    {
+       GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
+      solutionObjectInstance.SetActive(true);
+      solutionObjectInstance.transform.position = hitPoint;
+      Debug.Log("Sei un cecchino");   
     }
+       
+    
 }
 }
 

@@ -39,13 +39,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaIntensity: 1
-    - _ColorMapLOD: 15.59
-    - _FresnelPower: 6.1
+    - _ColorMapLOD: 5.25
+    - _FresnelPower: 3.97
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _SceneColoIntensity: -2.07
+    - _SceneColoIntensity: 2.5
     m_Colors:
-    - _SceneColor: {r: 0.5377358, g: 0.22347462, b: 0, a: 1}
+    - _SceneColor: {r: 0.20754719, g: 0.09161772, b: 0.008810962, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &7041529739653027
 MonoBehaviour:
