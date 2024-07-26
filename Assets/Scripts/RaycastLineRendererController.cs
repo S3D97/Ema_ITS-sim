@@ -410,7 +410,7 @@ public void InstantiateSolutionObject(GameObject solutionObject, Vector3 hitPoin
 {
     if (hitPoint == myJsonPosition && objectPositioning)
     {
-       GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
+    GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
       solutionObjectInstance.SetActive(true);
       solutionObjectInstance.transform.position = hitPoint;
       Debug.Log("Sei un cecchino");   
