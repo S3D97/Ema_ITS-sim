@@ -3,10 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
-using JetBrains.Annotations;
-using UnityEngine.InputSystem;
-using UnityEditor;
 
 public class RaycastController : MonoBehaviour
 {
@@ -16,7 +12,7 @@ public class RaycastController : MonoBehaviour
     public Vector3 lineOffset;
     public float lineRendererDistance;
     public Color excludeColor;
-    
+
     private int _interaction;
     private bool _doneTask = false;
 
@@ -32,18 +28,13 @@ public class RaycastController : MonoBehaviour
     public GameObject exhibitionPanel2;
     public GameObject[] solutionsButtons;
 
-
     private bool hitNewPoint = false;
     private Vector3 hitPoint;
 
     public bool objectPositioning = false;
+    private GameObject currentObjectToPlace = null;
 
     public Vector3 myJsonPosition;
-
-    
-
-    
-    
 
     public Color[] targetColors;
     public Dictionary<Color, GameObject> colorToIconMap = new Dictionary<Color, GameObject>();
@@ -52,10 +43,7 @@ public class RaycastController : MonoBehaviour
     private bool isRaycastActive = false;
     private List<ImageIconData> imageIconsData = new List<ImageIconData>();
 
-    public Dictionary<Color, GameObject> SolutionObjectsDictionary = new Dictionary<Color, GameObject>();
     public SolutionObjectsDictionary solutionObjectsDictionary;
-    
-    
 
     void Start()
     {
@@ -65,12 +53,18 @@ public class RaycastController : MonoBehaviour
         {
             colorCounts[color] = 0;
         }
-        
+
         exhibitionPanel.SetActive(true);
         _interaction = LayerMask.GetMask("Interaction");
-        remainingTime = timerTime; 
+        remainingTime = timerTime;
         doneButton.GetComponent<Button>().onClick.AddListener(DeactivateRaycast);
-        
+
+        // Associa i pulsanti alle funzioni
+        for (int i = 0; i < solutionsButtons.Length; i++)
+        {
+            int index = i; // Variabile locale per evitare chiusure sul ciclo
+            solutionsButtons[i].GetComponent<Button>().onClick.AddListener(() => SelectObjectToPlace(index));
+        }
     }
 
     void Update()
@@ -83,52 +77,69 @@ public class RaycastController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Physics.Raycast(ray, out hit, lineRendererDistance, _interaction))
-                {
-                    Renderer renderer = hit.collider.GetComponent<Renderer>();
-                    if (renderer != null)
-                    {
-                        Texture2D texture = renderer.material.mainTexture as Texture2D;
-                        Vector2 pixelUV = hit.textureCoord;
-                        pixelUV.x *= texture.width;
-                        pixelUV.y *= texture.height;
-                        Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                        if (hitColor == excludeColor)
-                        {
-                            return;
-                        }
-
-                        foreach (var targetColor in targetColors) //controllo sui target color della scena
-                        {
-                            if (ColorsAreEqual(hitColor, targetColor) && timerConfirm) //metodo che confronta i colori target con quelli presi dal raycast
-                            {
-                                doneButton.SetActive(true); //per fermare prima il posizionamento dei pointer se si finisce prima del tempo
-                                GameObject iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity); //posizionamento pointer su hitpoint del raycast
-                                iconInstance.transform.position = hit.point;
-                                colorCounts[targetColor]++;
-                                imageIconsData.Add(new ImageIconData //json del punto cliccato con il colore
-                                {
-                                    Position = hit.point,
-                                    Color = new SerializableColor(targetColor)
-                                });
-                                Debug.Log($"Colore {targetColor} selezionato. Conteggio: {colorCounts[targetColor]}");
-                                break;
-                            }
-                        }
-                    }
-
-                    if (_doneTask == true || timerConfirm == false)
-                    {
-                        DeactivateRaycast();
-                    }
-                    
-                }
+                HandleRaycastClick();
             }
         }
-     }
+
+        if (newTimerStart)
+        {
+            NewTimerPointerPhase();
+        }
+    }
+
+    private void HandleRaycastClick()
+    {
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, lineRendererDistance, _interaction))
+        {
+            Renderer renderer = hit.collider.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                Texture2D texture = renderer.material.mainTexture as Texture2D;
+                Vector2 pixelUV = hit.textureCoord;
+                pixelUV.x *= texture.width;
+                pixelUV.y *= texture.height;
+                Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                if (hitColor == excludeColor)
+                {
+                    return;
+                }
+
+                foreach (var targetColor in targetColors)
+                {
+                    if (ColorsAreEqual(hitColor, targetColor) && timerConfirm)
+                    {
+                        doneButton.SetActive(true);
+                        GameObject iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity);
+                        iconInstance.transform.position = hit.point;
+                        colorCounts[targetColor]++;
+                        imageIconsData.Add(new ImageIconData
+                        {
+                            Position = hit.point,
+                            Color = new SerializableColor(targetColor)
+                        });
+                        Debug.Log($"Colore {targetColor} selezionato. Conteggio: {colorCounts[targetColor]}");
+                        break;
+                    }
+                }
+            }
+
+            if (_doneTask || !timerConfirm)
+            {
+                DeactivateRaycast();
+            }
+
+            if (objectPositioning && currentObjectToPlace != null)
+            {
+                InstantiateSolutionObject(currentObjectToPlace, hit.point);
+                currentObjectToPlace = null;
+                objectPositioning = false;
+                DeactivateRaycast();
+            }
+        }
+    }
 
     private void ActivateRaycast()
     {
@@ -140,19 +151,22 @@ public class RaycastController : MonoBehaviour
     {
         isRaycastActive = false;
         lineRenderer.enabled = false;
-        remainingTime = 0f; 
-        timerUi.text = ""; 
-        timerUi.enabled = false; 
+        remainingTime = 0f;
+        timerUi.text = "";
+        timerUi.enabled = false;
     }
 
     private void UpdateLineRenderer()
     {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        lineRenderer.SetPosition(0, ray.origin + lineOffset);
-        lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
+        if (lineRenderer.enabled)
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            lineRenderer.SetPosition(0, ray.origin + lineOffset);
+            lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
+        }
     }
 
-    private bool ColorsAreEqual(Color color1, Color color2, float tolerance = 0.1f) //metodo che confronta i colori target con quelli presi dal raycast
+    private bool ColorsAreEqual(Color color1, Color color2, float tolerance = 0.1f)
     {
         return Mathf.Abs(color1.r - color2.r) < tolerance &&
                Mathf.Abs(color1.g - color2.g) < tolerance &&
@@ -198,67 +212,15 @@ public class RaycastController : MonoBehaviour
     {
         string json = JsonUtility.ToJson(new ImageIconsDataList { Icons = imageIconsData });
         File.WriteAllText(Application.persistentDataPath + "/ImageIconsData.json", json);
-        Debug.Log("Dati jason salvati correttamente");
+        Debug.Log("Dati json salvati correttamente");
     }
-
-    // public void LoadImageIconsData()
-    // {
-    //     string path = Application.persistentDataPath + "/ImageIconsData.json";
-    //     if (File.Exists(path))
-    //     {
-    //         string json = File.ReadAllText(path);
-    //         ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-    //         foreach (var data in loadedData.Icons)
-    //         {
-    //             GameObject iconInstance = Instantiate(imageIcon, data.Position, Quaternion.identity);
-    //             iconInstance.transform.position = data.Position;
-    //             // Aggiungere logica per mappare colori a icone specifiche sui pointer (tipo rampa, pedana, etc.)
-    //         }
-    //     }
-    // }
-
-    [System.Serializable]
-    public class ImageIconData
-    {
-        // dati da salvare per i pointer
-        public Vector3 Position;
-        public SerializableColor Color;
-    }
-
-    
-
-    [System.Serializable]
-    public class SerializableColor
-    {
-        public float r, g, b, a;
-
-        public SerializableColor(Color color)
-        {
-            r = color.r;
-            g = color.g;
-            b = color.b;
-            a = color.a;
-        }
-
-        public static implicit operator Color(SerializableColor c) => new Color(c.r, c.g, c.b, c.a);
-    }
-
-    [System.Serializable]
-    public class ImageIconsDataList
-    {
-        public List<ImageIconData> Icons;
-    }
-
-
-    
 
     public void DoneTask()
     {
         _doneTask = true;
     }
-    
-    
-    private void TimerStopped() 
+
+    private void TimerStopped()
     {
         exhibitionPanel1.SetActive(true);
         foreach (var ObjectButton in solutionsButtons)
@@ -266,159 +228,129 @@ public class RaycastController : MonoBehaviour
             if (ObjectButton != null)
             {
                 ObjectButton.SetActive(true);
-            } 
+            }
         }
-    
-        // Nuovo Timer
+
         remainingTime = newTimerTime;
         timerConfirm = true;
-        timerUi.enabled = true; 
-        NewTimerPointerPhase();
-        
+        timerUi.enabled = true;
+        newTimerStart = true;
     }
 
-
-
-    
-private void NewTimerPointerPhase()
-{
-    newTimerStart = true;
-    if (timerConfirm)
+    private void NewTimerPointerPhase()
     {
-        if (remainingTime > 0)
+        if (timerConfirm)
         {
-            //PlaceObjectsSolution();
-            remainingTime -= Time.deltaTime;
-            UpdateTimerText();
-        }
-        else
-        {
-            timerConfirm = false;
-            remainingTime = 0;
-            exhibitionPanel2.SetActive(true);
-            UpdateTimerText();
-            DeactivateRaycast();
-        }
-        newTimerStart = false;
-    }
-}
-
-
-
-// private void PlaceObjectsSolution()
-// {
-//     string path = Application.persistentDataPath + "/ImageIconsData.json";
-//     if (File.Exists(path))
-//     {
-//         string json = File.ReadAllText(path);
-//         ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-//
-//         foreach (var data in loadedData.Icons)
-//         {
-//             Vector3 position = data.Position;
-//             Color jsonColor = data.Color;
-//
-//             
-//             foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
-//             {
-//                 if (ColorsAreEqual(jsonColor, entry.Key))
-//                 {
-//                     GameObject solutionObject = entry.Value;
-//                     Ray ray = new Ray(mainCamera.transform.position, position - mainCamera.transform.position);
-//                     if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
-//                     {
-//                         solutionObject.transform.position = hit.point;
-//                     }
-//                     else
-//                     { 
-//                         Debug.LogError("Se so rubati i COLORI, chi si è rubato i COLORI");
-//                     }
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-// }
-
-public void ActiveInstantiatingObject()
-{
-   objectPositioning = true; 
-}
-
-
-
-public void PlaceObjectsSolution()
-{
-    //if (newTimerStart == true)
-    {
-        string path = Application.persistentDataPath + "/ImageIconsData.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-
-            foreach (var data in loadedData.Icons)
+            if (remainingTime > 0)
             {
-                Vector3 jsonPosition = data.Position;
-                myJsonPosition = data.Position;
-                Color jsonColor = data.Color;
-
-                foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
-                {
-                    if (ColorsAreEqual(jsonColor, entry.Key))
-                    {
-                        GameObject solutionObject = entry.Value;
-                        Ray ray = new Ray(mainCamera.transform.position, jsonPosition - mainCamera.transform.position);
-
-                        
-                        lineRenderer.enabled = true;
-                        lineRenderer.SetPosition(0, ray.origin + lineOffset);
-                        lineRenderer.SetPosition(1, ray.origin + ray.direction * lineRendererDistance);
-
-                        if (Physics.Raycast(ray, out RaycastHit hit, lineRendererDistance, _interaction))
-                        {
-                            hitNewPoint = true;
-                            hitPoint = hit.point;
-                       
-                        }
-                        else
-                        {
-                            hitNewPoint = false;
-                        }
-                              // Posizione solutionObjevct clone su nuovo hitpoint
-                        if (hitNewPoint  ) //  && hitPoint == jsonPosition && objectPositioning
-                        {
-                            InstantiateSolutionObject(solutionObject, hitPoint);
-                        }
-
-                       
-                        DeactivateRaycast();
-                    
-                        break;
-                    }
-                }
+                remainingTime -= Time.deltaTime;
+                UpdateTimerText();
+            }
+            else
+            {
+                timerConfirm = false;
+                remainingTime = 0;
+                exhibitionPanel2.SetActive(true);
+                UpdateTimerText();
+                DeactivateRaycast();
+                newTimerStart = false;
             }
         }
     }
-}
 
-
-
-
-
-public void InstantiateSolutionObject(GameObject solutionObject, Vector3 hitPoint)
-{
-    if (hitPoint == myJsonPosition && objectPositioning)
+    public void SelectObjectToPlace(int index)
     {
-    GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
-      solutionObjectInstance.SetActive(true);
-      solutionObjectInstance.transform.position = hitPoint;
-      Debug.Log("Sei un cecchino");   
+        if (index >= 0 && index < solutionsButtons.Length)
+        {
+            string path = Application.persistentDataPath + "/ImageIconsData.json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+                ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
+                GameObject solutionObject = solutionsButtons[index];
+
+                foreach (var data in loadedData.Icons)
+                {
+                    Vector3 jsonPosition = data.Position;
+                    myJsonPosition = data.Position;
+                    Color jsonColor = data.Color;
+                    foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
+                    {
+                        if (ColorsAreEqual(jsonColor, solutionObject.GetComponent<Renderer>().material.color))
+                        {
+                            currentObjectToPlace = solutionObject;
+                            myJsonPosition = data.Position;
+                            ActivateRaycast();
+                            objectPositioning = true;
+                            return;
+                        }   
+                    }
+                    
+                }
+
+                Debug.LogError("Nessun colore corrispondente trovato nel JSON.");
+            }
+        }
     }
-       
-    
+
+    public void InstantiateSolutionObject(GameObject solutionObject, Vector3 hitPoint)
+    {
+        if (objectPositioning && ColorsAreEqual(solutionObject.GetComponent<Renderer>().material.color, new Color(myJsonPosition.x, myJsonPosition.y, myJsonPosition.z)))
+        {
+            GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
+            solutionObjectInstance.SetActive(true);
+            solutionObjectInstance.transform.position = hitPoint;
+            Debug.Log("Oggetto posizionato correttamente");
+        }
+        else
+        {
+            Debug.LogError("Posizionamento oggetto fallito. Colore o posizione non corrispondono.");
+        }
+    }
 }
+
+[System.Serializable]
+public class ImageIconData
+{
+    public Vector3 Position;
+    public SerializableColor Color;
 }
+
+[System.Serializable]
+public class SerializableColor
+{
+    public float r, g, b, a;
+
+    public SerializableColor(Color color)
+    {
+        r = color.r;
+        g = color.g;
+        b = color.b;
+        a = color.a;
+    }
+
+    public static implicit operator Color(SerializableColor serializableColor)
+    {
+        return new Color(serializableColor.r, serializableColor.g, serializableColor.b, serializableColor.a);
+    }
+
+    public static implicit operator SerializableColor(Color color)
+    {
+        return new SerializableColor(color);
+    }
+}
+
+[System.Serializable]
+public class ImageIconsDataList
+{
+    public List<ImageIconData> Icons;
+}
+
+// [System.Serializable]
+// public class SolutionObjectsDictionary
+// {
+//     public Dictionary<Color, GameObject> SolutionObjectsNames;
+// }
 
 
 
