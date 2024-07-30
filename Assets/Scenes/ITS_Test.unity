@@ -486,7 +486,7 @@ GameObject:
   - component: {fileID: 97598023}
   - component: {fileID: 97598022}
   m_Layer: 5
-  m_Name: Button
+  m_Name: HandRail-Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1797,7 +1797,7 @@ GameObject:
   - component: {fileID: 259678366}
   - component: {fileID: 259678365}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Ramp-Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6131,7 +6131,7 @@ PrefabInstance:
     - target: {fileID: 1187080884685191928, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
       propertyPath: m_Name
-      value: HANDRAIL-SolutionObjectCanvas (1)
+      value: 'HANDRAIL-SolutionObjectCanvas '
       objectReference: {fileID: 0}
     - target: {fileID: 1187080884685191928, guid: 257f13f5b6df39d4ea668d1633755015,
         type: 3}
@@ -7193,22 +7193,26 @@ MonoBehaviour:
   timerUi: {fileID: 1401119822}
   timerConfirm: 0
   remainingTime: 0
-  timerTime: 10
-  newTimerTime: 10
+  timerTime: 5
+  newTimerTime: 20
   newTimerStart: 0
   doneButton: {fileID: 871936837}
   exhibitionPanel: {fileID: 742136479}
   exhibitionPanel1: {fileID: 677897736}
   exhibitionPanel2: {fileID: 2103789401}
   solutionsButtons:
-  - {fileID: 704538874}
   - {fileID: 1794427352}
+  - {fileID: 704538874}
+  itemsButtons:
+  - {fileID: 97598021}
+  - {fileID: 259678364}
   objectPositioning: 0
   myJsonPosition: {x: 0, y: 0, z: 0}
   targetColors:
   - {r: 0, g: 0.19607845, b: 0.9960785, a: 0}
   - {r: 0.99607843, g: 0, b: 0, a: 0}
   solutionObjectsDictionary: {fileID: 1976869943}
+  keY: {r: 0, g: 0, b: 0, a: 0}
 --- !u!120 &1483009357
 LineRenderer:
   serializedVersion: 2

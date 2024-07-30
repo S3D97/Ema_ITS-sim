@@ -19,17 +19,8 @@ public class SolutionObjectsDictionary : MonoBehaviour
         foreach (var item in solutionDict)
         {
             SolutionObjectsNames.Add(item.referenceColor, item.referenceObj);
-            // Color referenceColor = item.referenceColor;
-            // float r = referenceColor.r;
-            // float g = referenceColor.g;
-            // float b = referenceColor.b;
-            // float a = referenceColor.a;
         }
-        
-
     }
-
-
 }
 
 [Serializable]
@@ -40,8 +31,6 @@ public class SolutionDictItem
     
     [SerializeField]
     public Color referenceColor;
-    
-    
 }
 
 
