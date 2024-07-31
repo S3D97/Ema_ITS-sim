@@ -31,7 +31,7 @@ public class RaycastController : MonoBehaviour
     public GameObject exhibitionPanel2;
     public GameObject[] solutionsObjects;
     public GameObject[] itemsButtons;
-    public GameObject[] solutionsCanvas;
+    
     private GameObject iconInstance;
 
 
