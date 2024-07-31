@@ -1746,6 +1746,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 704538874}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1794427352}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &252132045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7196,23 +7220,24 @@ MonoBehaviour:
   timerTime: 5
   newTimerTime: 20
   newTimerStart: 0
+  placingObjectDistance: 1
   doneButton: {fileID: 871936837}
   exhibitionPanel: {fileID: 742136479}
   exhibitionPanel1: {fileID: 677897736}
   exhibitionPanel2: {fileID: 2103789401}
-  solutionsButtons:
-  - {fileID: 1794427352}
-  - {fileID: 704538874}
+  solutionsObjects:
+  - {fileID: 50297272}
+  - {fileID: 2836852640648814886}
   itemsButtons:
   - {fileID: 97598021}
   - {fileID: 259678364}
+  solutionsCanvas: []
   objectPositioning: 0
   myJsonPosition: {x: 0, y: 0, z: 0}
   targetColors:
   - {r: 0, g: 0.19607845, b: 0.9960785, a: 0}
   - {r: 0.99607843, g: 0, b: 0, a: 0}
   solutionObjectsDictionary: {fileID: 1976869943}
-  keY: {r: 0, g: 0, b: 0, a: 0}
 --- !u!120 &1483009357
 LineRenderer:
   serializedVersion: 2

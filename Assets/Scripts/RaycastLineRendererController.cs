@@ -23,17 +23,20 @@ public class RaycastController : MonoBehaviour
     public float timerTime;
     public float newTimerTime;
     public bool newTimerStart = false;
+    
+    public float placingObjectDistance = 1f;
     public GameObject doneButton;
     public GameObject exhibitionPanel;
     public GameObject exhibitionPanel1;
     public GameObject exhibitionPanel2;
-    public GameObject[] solutionsButtons;
+    public GameObject[] solutionsObjects;
     public GameObject[] itemsButtons;
+    public GameObject[] solutionsCanvas;
     private GameObject iconInstance;
 
 
     
-    //private bool isSelectingObject = false;
+    private bool firstInstance = false;
 
     public bool objectPositioning = false;
     private GameObject currentObjectToPlace = null;
@@ -52,6 +55,7 @@ public class RaycastController : MonoBehaviour
     void Start()
     {
         lineRenderer.enabled = false;
+        firstInstance = true;
 
         foreach (var color in targetColors)
         {
@@ -93,7 +97,7 @@ public class RaycastController : MonoBehaviour
 
     private void HandleRaycastClick()
     {
-        //if (isSelectingObject) return;
+        
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -107,6 +111,7 @@ public class RaycastController : MonoBehaviour
                 pixelUV.x *= texture.width;
                 pixelUV.y *= texture.height;
                 Color hitColor = texture.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                
                 if (hitColor == excludeColor)
                 {
                     return;
@@ -115,7 +120,7 @@ public class RaycastController : MonoBehaviour
                 {
                  foreach (var targetColor in targetColors)
                 {
-                    if (ColorsAreEqual(hitColor, targetColor) && timerConfirm)
+                    if (ColorsAreEqual(hitColor, targetColor) && firstInstance == true)
                     {
                         doneButton.SetActive(true);
                         iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity);
@@ -145,6 +150,7 @@ public class RaycastController : MonoBehaviour
                 currentObjectToPlace = null;
                 objectPositioning = false;
                 DeactivateRaycast();
+                
             }
         }
     }
@@ -231,7 +237,7 @@ public class RaycastController : MonoBehaviour
     private void TimerStopped()
     {
         exhibitionPanel1.SetActive(true);
-        foreach (var ObjectButton in solutionsButtons)
+        foreach (var ObjectButton in solutionsObjects)
         {
             if (ObjectButton != null)
             {
@@ -243,6 +249,7 @@ public class RaycastController : MonoBehaviour
         timerConfirm = true;
         timerUi.enabled = true;
         newTimerStart = true;
+        
     }
 
     private void NewTimerPointerPhase()
@@ -266,18 +273,18 @@ public class RaycastController : MonoBehaviour
         }
     }
 
-    public Color keY;
+    
     public void SelectObjectToPlace(int index)
     {
-        //isSelectingObject = true;
-        if (index >= 0 && index < solutionsButtons.Length)
+        firstInstance = false;
+        if (index >= 0 && index < solutionsObjects.Length)
         {
             string path = Application.persistentDataPath + "/ImageIconsData.json";
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);
                 ImageIconsDataList loadedData = JsonUtility.FromJson<ImageIconsDataList>(json);
-                GameObject solutionObject = solutionsButtons[index];
+                GameObject solutionObject = solutionsObjects[index];
 
                 foreach (var data in loadedData.Icons)
                 {
@@ -286,13 +293,12 @@ public class RaycastController : MonoBehaviour
                     Color jsonColor = data.Color;
                     foreach (var entry in solutionObjectsDictionary.SolutionObjectsNames)
                     {
-                        if (ColorsAreEqual(jsonColor, entry.Key))
+                        if (ColorsAreEqual(jsonColor, entry.Key) && firstInstance == false)
                         {
                             currentObjectToPlace = solutionObject;
                             myJsonPosition = data.Position;
                             ActivateRaycast();
                             objectPositioning = true;
-                            keY = entry.Key;
                             return;
                         }   
                     }
@@ -306,11 +312,12 @@ public class RaycastController : MonoBehaviour
 
     public void InstantiateSolutionObject(GameObject solutionObject, Vector3 hitPoint)
     {
-        if (objectPositioning == true && Vector3.Distance(myJsonPosition, hitPoint) < 10f) // confronto distanza vector3 con tolleranza
+        if (objectPositioning == true && Vector3.Distance(myJsonPosition, hitPoint) < placingObjectDistance) // confronto distanza vector3 con tolleranza
         {
-            if (iconInstance != null)
+            if (iconInstance)
             {
                 Destroy(iconInstance);
+                Debug.Log("pointer Distrutto");
             }
             GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
             solutionObjectInstance.SetActive(true);
