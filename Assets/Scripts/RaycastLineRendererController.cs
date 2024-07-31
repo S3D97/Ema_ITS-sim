@@ -33,6 +33,7 @@ public class RaycastController : MonoBehaviour
     public GameObject[] itemsButtons;
     
     private GameObject iconInstance;
+    private Vector3 iconhitpoint;
 
 
     
@@ -125,6 +126,7 @@ public class RaycastController : MonoBehaviour
                         doneButton.SetActive(true);
                         iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity);
                         iconInstance.transform.position = hit.point;
+                        iconhitpoint = hit.point;
                         colorCounts[targetColor]++;
                         imageIconsData.Add(new ImageIconData
                         {
@@ -314,7 +316,7 @@ public class RaycastController : MonoBehaviour
     {
         if (objectPositioning == true && Vector3.Distance(myJsonPosition, hitPoint) < placingObjectDistance) // confronto distanza vector3 con tolleranza
         {
-            if (iconInstance)
+            if (iconInstance && iconhitpoint == hitPoint)
             {
                 Destroy(iconInstance);
                 Debug.Log("pointer Distrutto");
