@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4733448367833240323}
   - component: {fileID: 5031211435617604269}
   - component: {fileID: 3214136947675329629}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Pointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,9 +131,10 @@ GameObject:
   - component: {fileID: 8376420672264673112}
   - component: {fileID: 6122142215333101099}
   - component: {fileID: 8658664931686872213}
-  m_Layer: 0
+  - component: {fileID: 5784884831628471079}
+  m_Layer: 13
   m_Name: 3DPointerCanvas
-  m_TagString: Untagged
+  m_TagString: Pointer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -203,7 +204,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6122142215333101099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,3 +234,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8259164ab3916349a6e7c3fbcc01ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &5784884831628471079
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2836852639898496139}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 0.04}
+  m_Center: {x: 0, y: 0, z: 0}

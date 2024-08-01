@@ -15,7 +15,10 @@ public class RaycastController : MonoBehaviour
     public Color excludeColor;
 
     private int _interaction;
+    private int _pointerLayer;
     private bool _doneTask = false;
+
+    private bool objectInstanciated = false;
 
     public TextMeshProUGUI timerUi;
     public bool timerConfirm;
@@ -33,6 +36,7 @@ public class RaycastController : MonoBehaviour
     public GameObject[] itemsButtons;
     
     private GameObject iconInstance;
+    //public Collider iconCollider;
     private Vector3 iconhitpoint;
 
 
@@ -57,6 +61,7 @@ public class RaycastController : MonoBehaviour
     {
         lineRenderer.enabled = false;
         firstInstance = true;
+        _pointerLayer = LayerMask.GetMask("Pointer");
 
         foreach (var color in targetColors)
         {
@@ -65,6 +70,7 @@ public class RaycastController : MonoBehaviour
 
         exhibitionPanel.SetActive(true);
         _interaction = LayerMask.GetMask("Interaction");
+        _pointerLayer = LayerMask.GetMask("Pointer");
         remainingTime = timerTime;
         doneButton.GetComponent<Button>().onClick.AddListener(DeactivateRaycast);
 
@@ -125,6 +131,8 @@ public class RaycastController : MonoBehaviour
                     {
                         doneButton.SetActive(true);
                         iconInstance = Instantiate(imageIcon, hit.point, Quaternion.identity);
+                        //iconInstance.layer = LayerMask.NameToLayer("Pointer");
+                        //iconInstance.tag = "Pointer";
                         iconInstance.transform.position = hit.point;
                         iconhitpoint = hit.point;
                         colorCounts[targetColor]++;
@@ -151,10 +159,33 @@ public class RaycastController : MonoBehaviour
                 InstantiateSolutionObject(currentObjectToPlace, hit.point);
                 currentObjectToPlace = null;
                 objectPositioning = false;
-                DeactivateRaycast();
+                //DeactivateRaycast();
                 
             }
         }
+        
+            Collider iconCollider = iconInstance.GetComponent<BoxCollider>();
+            if (Physics.Raycast(ray, out hit, lineRendererDistance, _pointerLayer)) //&& iconhitpoint == hitPoint
+            {
+               /*  if (hit.collider.tag == "Pointer")
+                {
+                    Destroy(iconInstance);
+                    Debug.Log("pointer Distrutto"); 
+                } */
+                
+                
+                Debug.Log("Hit object: " + hit.collider.gameObject.name);
+                if (hit.collider == iconCollider && firstInstance == false)
+                {
+                    if (objectInstanciated == true)
+                    {
+                        Destroy(iconInstance);
+                        Debug.Log("pointer Distrutto"); 
+                        objectInstanciated = false;   
+                    }
+                       
+                }
+            }
     }
 
     private void ActivateRaycast()
@@ -236,6 +267,11 @@ public class RaycastController : MonoBehaviour
         _doneTask = true;
     }
 
+    public void NewTimerStart()
+    {
+        newTimerStart = true;
+    }
+
     private void TimerStopped()
     {
         exhibitionPanel1.SetActive(true);
@@ -250,7 +286,7 @@ public class RaycastController : MonoBehaviour
         remainingTime = newTimerTime;
         timerConfirm = true;
         timerUi.enabled = true;
-        newTimerStart = true;
+       
         
     }
 
@@ -267,10 +303,10 @@ public class RaycastController : MonoBehaviour
             {
                 timerConfirm = false;
                 remainingTime = 0;
-                //exhibitionPanel2.SetActive(true);
                 UpdateTimerText();
                 DeactivateRaycast();
                 newTimerStart = false;
+                
             }
         }
     }
@@ -316,19 +352,26 @@ public class RaycastController : MonoBehaviour
     {
         if (objectPositioning == true && Vector3.Distance(myJsonPosition, hitPoint) < placingObjectDistance) // confronto distanza vector3 con tolleranza
         {
-            if (iconInstance && iconhitpoint == hitPoint)
+            /* if (iconInstance) //&& iconhitpoint == hitPoint
             {
                 Destroy(iconInstance);
                 Debug.Log("pointer Distrutto");
-            }
+            } */
             GameObject solutionObjectInstance = Instantiate(solutionObject, hitPoint, Quaternion.identity);
             solutionObjectInstance.SetActive(true);
             solutionObjectInstance.transform.position = hitPoint;
+            objectInstanciated = true;
+            
             Debug.Log("Oggetto posizionato correttamente");
         }
         else
         {
             Debug.LogError("Posizionamento oggetto fallito. Colore o posizione non corrispondono.");
+        }
+        if (newTimerStart == false && remainingTime == 0)
+        {
+            exhibitionPanel2.SetActive(true);
+            DeactivateRaycast();
         }
     }
 }
