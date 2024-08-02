@@ -100,6 +100,8 @@ public class RaycastController : MonoBehaviour
         {
             NewTimerPointerPhase();
         }
+        
+       
     }
 
     private void HandleRaycastClick()
@@ -201,6 +203,7 @@ public class RaycastController : MonoBehaviour
         remainingTime = 0f;
         timerUi.text = "";
         timerUi.enabled = false;
+        
     }
 
     private void UpdateLineRenderer()
@@ -286,8 +289,8 @@ public class RaycastController : MonoBehaviour
         remainingTime = newTimerTime;
         timerConfirm = true;
         timerUi.enabled = true;
+         
        
-        
     }
 
     private void NewTimerPointerPhase()
@@ -306,6 +309,8 @@ public class RaycastController : MonoBehaviour
                 UpdateTimerText();
                 DeactivateRaycast();
                 newTimerStart = false;
+                
+                
                 
             }
         }
@@ -368,13 +373,17 @@ public class RaycastController : MonoBehaviour
         {
             Debug.LogError("Posizionamento oggetto fallito. Colore o posizione non corrispondono.");
         }
-        if (newTimerStart == false && remainingTime == 0)
-        {
-            exhibitionPanel2.SetActive(true);
-            DeactivateRaycast();
-        }
+        
     }
 }
+
+                   
+                   /* if (newTimerStart == false && remainingTime == 0)
+                    
+                    {
+                        exhibitionPanel2.SetActive(true);
+                        DeactivateRaycast();
+                    } */
 
 [System.Serializable]
 public class ImageIconData

@@ -7268,7 +7268,7 @@ MonoBehaviour:
   timerConfirm: 0
   remainingTime: 0
   timerTime: 5
-  newTimerTime: 30
+  newTimerTime: 10
   newTimerStart: 0
   placingObjectDistance: 1
   doneButton: {fileID: 871936837}
