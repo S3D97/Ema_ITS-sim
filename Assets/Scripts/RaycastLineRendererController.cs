@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine.InputSystem;
+using System.Threading.Tasks;
 
 public class RaycastController : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class RaycastController : MonoBehaviour
     public float timerTime;
     public float newTimerTime;
     public bool newTimerStart = false;
+
+    private bool _panel2falg = true;
     
     public float placingObjectDistance = 1f;
     public GameObject doneButton;
@@ -57,6 +60,8 @@ public class RaycastController : MonoBehaviour
 
     public SolutionObjectsDictionary solutionObjectsDictionary;
 
+     public Queue<GameObject> solutionsObjectsQueue = new Queue<GameObject>();
+
     void Start()
     {
         lineRenderer.enabled = false;
@@ -66,6 +71,11 @@ public class RaycastController : MonoBehaviour
         foreach (var color in targetColors)
         {
             colorCounts[color] = 0;
+        }
+
+        foreach (var obj in solutionsObjects)
+        {
+            solutionsObjectsQueue.Enqueue(obj);
         }
 
         exhibitionPanel.SetActive(true);
@@ -100,9 +110,17 @@ public class RaycastController : MonoBehaviour
         {
             NewTimerPointerPhase();
         }
+
+        if (solutionsObjectsQueue.Count == 0 || newTimerStart == false && remainingTime == 0f)
+            {
+                exhibitionPanel2.SetActive(true);
+                DeactivateRaycast();
+            }
         
        
     }
+
+    
 
     private void HandleRaycastClick()
     {
@@ -277,7 +295,13 @@ public class RaycastController : MonoBehaviour
 
     private void TimerStopped()
     {
-        exhibitionPanel1.SetActive(true);
+
+        if (_panel2falg == true)
+            {
+                exhibitionPanel1.SetActive(true); 
+                _panel2falg = false;  
+            }
+        
         foreach (var ObjectButton in solutionsObjects)
         {
             if (ObjectButton != null)
@@ -285,6 +309,8 @@ public class RaycastController : MonoBehaviour
                 ObjectButton.SetActive(true);
             }
         }
+
+        
 
         remainingTime = newTimerTime;
         timerConfirm = true;
@@ -366,8 +392,11 @@ public class RaycastController : MonoBehaviour
             solutionObjectInstance.SetActive(true);
             solutionObjectInstance.transform.position = hitPoint;
             objectInstanciated = true;
+            solutionsObjectsQueue.Dequeue();
             
             Debug.Log("Oggetto posizionato correttamente");
+            
+            
         }
         else
         {
@@ -375,15 +404,29 @@ public class RaycastController : MonoBehaviour
         }
         
     }
+
+
+    // test call API
+    async void APIcall()
+    {
+        Debug.Log("Start of the method");
+
+        await SomeAsyncOperation();
+
+        Debug.Log("After the async operation");
+    }
+
+    async Task SomeAsyncOperation()
+    {
+        await Task.Delay(2000);
+        Debug.Log("attesa svolgimento task");
+    }
 }
 
+
+
                    
-                   /* if (newTimerStart == false && remainingTime == 0)
-                    
-                    {
-                        exhibitionPanel2.SetActive(true);
-                        DeactivateRaycast();
-                    } */
+                   
 
 [System.Serializable]
 public class ImageIconData
@@ -421,6 +464,9 @@ public class ImageIconsDataList
 {
     public List<ImageIconData> Icons;
 }
+
+
+
 
 
 
