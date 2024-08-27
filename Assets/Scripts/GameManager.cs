@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -18,7 +17,7 @@ public class DeserializableData
 [Serializable]
 public class ScoreData
 {
-    public string score;
+    public int score;
     public string feedback;
 }
 
@@ -92,26 +91,29 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // PAtch call che va parametrizzato
     public async Task PatchApiCall2()
     {
+        int randomScore = UnityEngine.Random.Range(0, 1000);
+
+        // 1. Prepare the data
         ScoreData scoreData = new ScoreData
         {
-            score = "100",
-            feedback = "Good job!"
+            score = randomScore,
+            feedback = "Simone Pelosi!"
         };
-
         string jsonConverted = JsonUtility.ToJson(scoreData); // Convert to json
-        string httpPutRequestBody = $"{{\"results\":\"{jsonConverted}\"}}"; // Wrap in a json object since Unity deosn't support inner seria
+        string jsonConstructed = $"{{\"results\": {jsonConverted} }}"; // Wrap in a json object since Unity deosn't support inner seria
+        byte[] requestBody = new UTF8Encoding().GetBytes(jsonConstructed);
 
-        string USER_ID = "1";
+        // 2. Prepare the URL
+        string USER_ID = "cm0atxv6u0000me9grotb3u7h";
         string EXPERIENCE_ID = "1";
-
         string urlPath = $"https://futura-frontend-pi.vercel.app/api/users/{USER_ID}/experiences/{EXPERIENCE_ID}";
+
+        // 3. Send the request
         UnityWebRequest www = new UnityWebRequest(urlPath, "PATCH");
-
-        byte[] jsonToSend = new UTF8Encoding().GetBytes(httpPutRequestBody);
-        www.uploadHandler = new UploadHandlerRaw(jsonToSend);
-
+        www.uploadHandler = new UploadHandlerRaw(requestBody);
         www.SetRequestHeader("Content-Type", "application/json");
 
         var operation = www.SendWebRequest();
@@ -120,16 +122,32 @@ public class GameManager : MonoBehaviour
             while (!operation.isDone)
                 await Task.Yield();
 
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.LogError("Connection error: " + www.error.ToString());
+            }
+
+            if (www.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Protocol error:" + www.error.ToString());
+            }
+
+            if (www.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                Debug.LogError("Data Processing Error: " + www.error.ToString());
+            }
+
             if (www.result != UnityWebRequest.Result.Success)
                 throw new NotImplementedException(
                     $"Failed to patch with error: {www.result}"
                 );
 
-            Debug.Log("Patch done!");
+            Debug.Log("Patch done! " + www.result);
+            isPressed = false;
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to PATCH with error:  {ex}");
+            isPressed = false;
             throw;
         }
     }
