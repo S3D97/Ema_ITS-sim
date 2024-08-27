@@ -1,1 +1,34 @@
-{}
+{
+    "name": "Input-ITS-MAP",
+    "maps": [
+        {
+            "name": "uiFirstPerson",
+            "id": "0e20d8cb-326b-4c51-8037-ee7dff02381a",
+            "actions": [
+                {
+                    "name": "UnlockMouse",
+                    "type": "Button",
+                    "id": "5ec71022-f0b2-4130-9e9c-625017217c8e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "55fd3fc1-e88e-4391-b934-729c3a95ef8a",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UnlockMouse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
